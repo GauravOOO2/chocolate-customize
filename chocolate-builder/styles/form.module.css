@@ -1,0 +1,165 @@
+.card {
+  background: white;
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: var(--shadow-medium);
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sectionTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--primary-brown);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Chocolate Type Selection */
+.typeGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.typeButton {
+  padding: 16px;
+  border: 2px solid #eee;
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+  text-align: center;
+  font-size: 0.95rem;
+  position: relative;
+}
+
+.milkButton.selected {
+  border-color: var(--light-brown);
+  background: #fdf5f2;
+  color: var(--light-brown);
+}
+
+.darkButton.selected,
+.dark_sugar_freeButton.selected {
+  border-color: var(--dark-brown);
+  background: #f7f1f0;
+  color: var(--dark-brown);
+}
+
+.whiteButton.selected {
+  border-color: #ddd;
+  background: #fafafa;
+  color: #555;
+}
+
+/* Message Input */
+.messageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.counter {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.input, .textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #eee;
+  border-radius: 10px;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+  color: var(--primary-brown);
+  box-sizing: border-box;
+}
+
+.input:focus, .textarea:focus {
+  border-color: var(--light-brown);
+}
+
+.textarea {
+  resize: vertical;
+  font-family: inherit;
+}
+
+.help {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* Shipping Fields */
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+/* Toppings */
+.toppingGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.chip {
+  padding: 8px 16px;
+  border: 1px solid #eee;
+  border-radius: 20px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.chipSelected {
+  background: var(--primary-brown);
+  border-color: var(--primary-brown);
+  color: white;
+}
+
+/* Submit Button */
+.submitButton {
+  margin-top: 10px;
+  padding: 16px;
+  border: none;
+  border-radius: 12px;
+  background: var(--dark-brown);
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.submitButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.submitButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

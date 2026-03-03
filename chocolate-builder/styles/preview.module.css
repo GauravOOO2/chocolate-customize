@@ -1,0 +1,91 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.previewCard {
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: var(--shadow-medium);
+  text-align: center;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--primary-brown);
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.imageWrapper {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f0f0f0;
+  position: relative;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Summary Card */
+.summaryCard {
+  background: var(--cream);
+  border-radius: 20px;
+  padding: 24px;
+  border: 1px dashed var(--light-brown);
+}
+
+.summaryTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: var(--dark-brown);
+  border-bottom: 1px solid rgba(141, 110, 99, 0.2);
+  padding-bottom: 8px;
+}
+
+.summaryList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.summaryItem {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.summaryLabel {
+  font-weight: 600;
+  color: var(--primary-brown);
+  font-size: 0.9rem;
+}
+
+.summaryValue {
+  color: var(--text-main);
+  text-align: right;
+  font-size: 0.95rem;
+  max-width: 200px;
+  word-wrap: break-word;
+}
+
+.summaryDivider {
+  height: 1px;
+  background: rgba(141, 110, 99, 0.2);
+  margin: 4px 0;
+}
+
+.toppingsText {
+  font-style: italic;
+  color: var(--text-muted);
+}
