@@ -13,7 +13,11 @@ const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || "default_secret";
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: "*",
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  allowedHeaders: ["Content-Type", "x-auth-token"],
+}));
 app.use(express.json());
 
 // Routes

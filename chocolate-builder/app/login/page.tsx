@@ -73,8 +73,8 @@ export default function LoginPage() {
 
         <button type="submit" className={styles.submitButton}>Login</button>
         
-        <p style={{ marginTop: "15px", textAlign: "center" }}>
-          Don't have an account? <Link href="/signup" style={{ color: "#795548" }}>Sign up here</Link>
+        <p style={{ marginTop: "15px", textAlign: "center", color: "#795548" }}>
+          Don't have an account? <Link href="/signup" style={{ color: "#795548", fontWeight: "bold" }}>Sign up here</Link>
         </p>
       </form>
     </div>
