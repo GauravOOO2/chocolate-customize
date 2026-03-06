@@ -14,9 +14,11 @@ const JWT_SECRET = process.env.JWT_SECRET || "default_secret";
 
 // Middleware
 app.use(cors({
-  origin: "*",
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  allowedHeaders: ["Content-Type", "x-auth-token"],
+  origin: ["http://localhost:3000", "https://chocofuel.netlify.app"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "x-auth-token", "Authorization"],
+  credentials: true,
+  exposedHeaders: ["x-auth-token"]
 }));
 app.use(express.json());
 
@@ -51,10 +53,8 @@ app.post("/api/auth/signup", async (req, res) => {
       },
     };
 
-    jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" }, (err, token) => {
-      if (err) throw err;
-      res.status(201).json({ token, user: { id: user.id, name: user.name, email: user.email } });
-    });
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
+    res.status(201).json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
   } catch (error) {
     console.error("Signup error:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -65,15 +65,23 @@ app.post("/api/auth/signup", async (req, res) => {
 app.post("/api/auth/login", async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log(`Login attempt for email: ${email}`);
+
+    if (!email || !password) {
+      console.log("Login failed: Email or password missing");
+      return res.status(400).json({ message: "Email and password are required" });
+    }
 
     // Check if user exists
     let user = await User.findOne({ email });
     if (!user) {
+      console.log(`Login failed: No user found with email ${email}`);
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
+      console.log(`Login failed: Password mismatch for email ${email}`);
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
@@ -83,10 +91,9 @@ app.post("/api/auth/login", async (req, res) => {
       },
     };
 
-    jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" }, (err, token) => {
-      if (err) throw err;
-      res.status(200).json({ token, user: { id: user.id, name: user.name, email: user.email } });
-    });
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
+    console.log(`Login successful for user: ${user.id} (${user.role})`);
+    res.status(200).json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
   } catch (error) {
     console.error("Login error:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -135,6 +142,56 @@ app.get("/api/orders", auth, async (req, res) => {
     res.status(200).json(orders);
   } catch (error) {
     console.error("Error fetching orders:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// Admin Route: Get all users and all orders
+const isAdmin = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (user && user.role === "admin") {
+      next();
+    } else {
+      res.status(403).json({ message: "Access denied. Admins only." });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+app.get("/api/admin/data", auth, isAdmin, async (req, res) => {
+  try {
+    const users = await User.find({}, "-password").lean();
+    const orders = await Order.find().populate("user", "name email").sort({ createdAt: -1 }).lean();
+    
+    // Group orders by user for better display
+    const usersWithOrders = users.map(user => ({
+      ...user,
+      orders: orders.filter(order => order.user && order.user._id.toString() === user._id.toString())
+    }));
+
+    res.status(200).json({ users: usersWithOrders, allOrders: orders });
+  } catch (error) {
+    console.error("Admin data error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+app.patch("/api/admin/orders/:id/status", auth, isAdmin, async (req, res) => {
+  try {
+    const { isReceived, isShipped } = req.body;
+    const update = {};
+    if (typeof isReceived === "boolean") update.isReceived = isReceived;
+    if (typeof isShipped === "boolean") update.isShipped = isShipped;
+
+    const order = await Order.findByIdAndUpdate(req.params.id, update, { new: true });
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+    res.status(200).json(order);
+  } catch (error) {
+    console.error("Update order status error:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });

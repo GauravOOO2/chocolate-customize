@@ -14,7 +14,7 @@ const OrderSchema = new mongoose.Schema({
   message: {
     type: String,
     required: true,
-    maxlength: 20,
+    maxlength: 26,
   },
   toppings: {
     type: [String],
@@ -31,6 +31,14 @@ const OrderSchema = new mongoose.Schema({
   receiverNumber: {
     type: String,
     required: true,
+  },
+  isReceived: {
+    type: Boolean,
+    default: false,
+  },
+  isShipped: {
+    type: Boolean,
+    default: false,
   },
   createdAt: {
     type: Date,

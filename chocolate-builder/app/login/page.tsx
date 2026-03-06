@@ -45,7 +45,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className={styles.container} style={{ maxWidth: "400px", margin: "150px auto" }}>
+    <div className={styles.container} style={{ maxWidth: "400px", margin: "100px auto" }}>
+      <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+        <h1 style={{ color: "#5d4037", fontWeight: "bold" }}>CHOCOFUEL - Feed the Feeling</h1>
+      </div>
       <form className={styles.card} onSubmit={handleSubmit}>
         <h2 className={styles.sectionTitle} style={{ textAlign: "center", marginBottom: "20px" }}>Welcome Back</h2>
         {error && <p style={{ color: "red", textAlign: "center", marginBottom: "10px" }}>{error}</p>}

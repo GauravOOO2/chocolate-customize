@@ -29,7 +29,7 @@ const TOPPING_OPTIONS = [
   "Cranberry",
 ];
 
-const MAX_MESSAGE_LENGTH = 20;
+const MAX_MESSAGE_LENGTH = 26;
 
 export default function BuilderLayout() {
   const { user, token, logout, isAuthenticated, isLoading } = useAuth();
@@ -148,6 +148,9 @@ export default function BuilderLayout() {
 
   return (
     <main className={styles.page}>
+      <div style={{ textAlign: "center", paddingTop: "2rem", marginBottom: "-1rem" }}>
+        <h1 style={{ color: "#5d4037", margin: 0, fontWeight: "bold" }}>CHOCOFUEL - Feed the Feeling</h1>
+      </div>
       <header style={{ 
         display: "flex", 
         justifyContent: "space-between", 
@@ -155,7 +158,8 @@ export default function BuilderLayout() {
         padding: "1rem 2rem",
         backgroundColor: "#fff",
         boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-        marginBottom: "2rem"
+        marginBottom: "2rem",
+        marginTop: "2rem"
       }}>
         <div>
           <h2 style={{ margin: 0, color: "#5d4037" }}>Hello, {user?.name}</h2>
