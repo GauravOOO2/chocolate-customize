@@ -60,7 +60,7 @@ export default function SignupPage() {
         />
       </div>
       <form className={styles.card} onSubmit={handleSubmit}>
-        <h2 className={`${styles.sectionTitle} heading-font`} style={{ textAlign: "center", marginBottom: "20px" }}>Create Account</h2>
+        <h2 className={styles.sectionTitle} style={{ textAlign: "center", marginBottom: "20px" }}>Create Account</h2>
         {error && <p style={{ color: "red", textAlign: "center", marginBottom: "10px" }}>{error}</p>}
         
         <div className={styles.fieldGroup}>
