@@ -14,8 +14,13 @@ const JWT_SECRET = process.env.JWT_SECRET || "default_secret";
 
 // Middleware
 app.use(cors({
-  origin: ["http://localhost:3000", "https://chocofuel.netlify.app"],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  origin: [
+    "http://localhost:3000", 
+    "https://chocofuel.netlify.app", 
+    "https://www.chocofuel.com", 
+    "https://chocofuel.com"
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
   allowedHeaders: ["Content-Type", "x-auth-token", "Authorization"],
   credentials: true,
   exposedHeaders: ["x-auth-token"]
