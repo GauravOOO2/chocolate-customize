@@ -39,6 +39,7 @@ export default function AdminPage() {
   const [adminData, setAdminData] = useState<{ users: UserWithOrders[]; allOrders: Order[] } | null>(null);
   const [error, setError] = useState("");
   const [loadingData, setLoadingData] = useState(true);
+  const [updatingOrders, setUpdatingOrders] = useState<Record<string, boolean>>({});
 
   const fetchAdminData = async () => {
     if (!token) return;
@@ -81,6 +82,7 @@ export default function AdminPage() {
   }, [token, isAuthenticated, user, router]);
 
   const handleStatusUpdate = async (orderId: string, field: "isReceived" | "isShipped", value: boolean) => {
+    setUpdatingOrders(prev => ({ ...prev, [orderId]: true }));
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       const response = await fetch(`${apiUrl}/admin/orders/${orderId}/status`, {
@@ -94,13 +96,15 @@ export default function AdminPage() {
 
       if (response.ok) {
         // Refresh data to show changes
-        fetchAdminData();
+        await fetchAdminData();
       } else {
         alert("Failed to update status");
       }
     } catch (err) {
       console.error("Error updating status:", err);
       alert("An error occurred");
+    } finally {
+      setUpdatingOrders(prev => ({ ...prev, [orderId]: false }));
     }
   };
 
@@ -196,6 +200,7 @@ export default function AdminPage() {
                                   <input 
                                     type="checkbox" 
                                     checked={o.isReceived} 
+                                    disabled={updatingOrders[o._id]}
                                     onChange={(e) => handleStatusUpdate(o._id, "isReceived", e.target.checked)}
                                   /> Received
                                 </label>
@@ -203,9 +208,11 @@ export default function AdminPage() {
                                   <input 
                                     type="checkbox" 
                                     checked={o.isShipped} 
+                                    disabled={updatingOrders[o._id]}
                                     onChange={(e) => handleStatusUpdate(o._id, "isShipped", e.target.checked)}
                                   /> Shipped
                                 </label>
+                                {updatingOrders[o._id] && <span className="loader" style={{ width: "12px", height: "12px", border: "2px solid #795548", borderBottomColor: "transparent", margin: "5px 0 0 0" }}></span>}
                               </div>
                             </td>
                             <td style={{ padding: "10px", fontSize: "0.9em" }}>{o.shippingAddress}</td>

@@ -34,6 +34,7 @@ const MAX_MESSAGE_LENGTH = 26;
 export default function BuilderLayout() {
   const { user, token, logout, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [state, setState] = useState<ChocolateState>({
     chocolateType: "milk",
     message: "",
@@ -93,6 +94,7 @@ export default function BuilderLayout() {
     }
 
     if (isFormValid) {
+      setIsSubmitting(true);
       try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL;
         if (!apiUrl) {
@@ -138,6 +140,8 @@ export default function BuilderLayout() {
       } catch (error) {
         console.error("Submission error:", error);
         alert("Something went wrong. Please check if the server is running.");
+      } finally {
+        setIsSubmitting(false);
       }
     }
   };
@@ -196,6 +200,7 @@ export default function BuilderLayout() {
               maxMessageLength={MAX_MESSAGE_LENGTH}
               toppingOptions={TOPPING_OPTIONS}
               isFormValid={isFormValid}
+              isSubmitting={isSubmitting}
             />
           </div>
           <div className={styles.previewColumn}>

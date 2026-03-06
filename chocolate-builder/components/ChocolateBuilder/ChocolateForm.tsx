@@ -12,6 +12,7 @@ interface ChocolateFormProps {
   maxMessageLength: number;
   toppingOptions: string[];
   isFormValid: boolean;
+  isSubmitting?: boolean;
 }
 
 const MESSAGE_IDEAS = [
@@ -67,6 +68,7 @@ export default function ChocolateForm({
   maxMessageLength,
   toppingOptions,
   isFormValid,
+  isSubmitting = false,
 }: ChocolateFormProps) {
   const [showIdeas, setShowIdeas] = useState(false);
 
@@ -228,9 +230,10 @@ export default function ChocolateForm({
       <button
         type="submit"
         className={styles.submitButton}
-        disabled={!isFormValid}
+        disabled={!isFormValid || isSubmitting}
       >
-        Complete Selection
+        {isSubmitting ? "Placing Order..." : "Complete Selection"}
+        {isSubmitting && <span className="loader"></span>}
       </button>
     </form>
   );

@@ -13,6 +13,7 @@ export default function SignupPage() {
     password: "",
   });
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { login } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,6 +23,7 @@ export default function SignupPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setIsSubmitting(true);
 
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -43,6 +45,8 @@ export default function SignupPage() {
       }
     } catch (err) {
       setError("An error occurred. Please try again later.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -68,6 +72,7 @@ export default function SignupPage() {
             value={formData.name}
             onChange={handleChange}
             required
+            disabled={isSubmitting}
           />
         </div>
 
@@ -80,6 +85,7 @@ export default function SignupPage() {
             value={formData.email}
             onChange={handleChange}
             required
+            disabled={isSubmitting}
           />
         </div>
 
@@ -92,6 +98,7 @@ export default function SignupPage() {
             value={formData.phoneNumber}
             onChange={handleChange}
             required
+            disabled={isSubmitting}
           />
         </div>
 
@@ -104,10 +111,14 @@ export default function SignupPage() {
             value={formData.password}
             onChange={handleChange}
             required
+            disabled={isSubmitting}
           />
         </div>
 
-        <button type="submit" className={styles.submitButton}>Sign Up</button>
+        <button type="submit" className={styles.submitButton} disabled={isSubmitting}>
+          {isSubmitting ? "Creating Account..." : "Sign Up"}
+          {isSubmitting && <span className="loader"></span>}
+        </button>
         
         <p style={{ marginTop: "15px", textAlign: "center", color: "#795548" }}>
           Already have an account? <Link href="/login" style={{ color: "#795548", fontWeight: "bold" }}>Login here</Link>
