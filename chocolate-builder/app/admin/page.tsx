@@ -115,7 +115,7 @@ export default function AdminPage() {
   return (
     <main className={styles.page}>
       <div style={{ textAlign: "center", paddingTop: "2rem", marginBottom: "-1rem" }}>
-        <h1 style={{ color: "#5d4037", margin: 0, fontWeight: "bold" }}>CHOCOFUEL - Admin Dashboard</h1>
+        <h1 className="heading-font" style={{ color: "#5d4037", margin: 0, fontWeight: "bold" }}>CHOCOFUEL - Admin Dashboard</h1>
       </div>
       
       <header style={{ 
@@ -129,7 +129,7 @@ export default function AdminPage() {
         marginTop: "2rem"
       }}>
         <div>
-          <h2 style={{ margin: 0, color: "#5d4037" }}>Welcome, Admin {user?.name}</h2>
+          <h2 className="heading-font" style={{ margin: 0, color: "#5d4037" }}>Welcome, Admin {user?.name}</h2>
         </div>
         <button 
           onClick={logout}

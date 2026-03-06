@@ -148,8 +148,12 @@ export default function BuilderLayout() {
 
   return (
     <main className={styles.page}>
-      <div style={{ textAlign: "center", paddingTop: "2rem", marginBottom: "-1rem" }}>
-        <h1 style={{ color: "#5d4037", margin: 0, fontWeight: "bold" }}>CHOCOFUEL - Feed the Feeling</h1>
+      <div style={{ textAlign: "center", paddingTop: "2rem", marginBottom: "0rem" }}>
+        <img 
+          src="/assets/CHOCOLATE LOGO 2_pages-to-jpg-0002.png" 
+          alt="CHOCOFUEL - Feed the Feeling" 
+          style={{ width: "90%", maxWidth: "450px", height: "auto" }}
+        />
       </div>
       <header style={{ 
         display: "flex", 
@@ -159,7 +163,7 @@ export default function BuilderLayout() {
         backgroundColor: "#fff",
         boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
         marginBottom: "2rem",
-        marginTop: "2rem"
+        marginTop: "1rem"
       }}>
         <div>
           <h2 style={{ margin: 0, color: "#5d4037" }}>Hello, {user?.name}</h2>
@@ -179,7 +183,7 @@ export default function BuilderLayout() {
         </button>
       </header>
       <div className={styles.container}>
-        <h1 className={styles.title}>Chocolate Bar Customizer</h1>
+        <h1 className={`${styles.title} heading-font`}>Chocolate Bar Customizer</h1>
         <div className={styles.layout}>
           <div className={styles.formColumn}>
             <ChocolateForm

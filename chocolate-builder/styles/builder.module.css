@@ -45,6 +45,6 @@
     grid-template-columns: 1fr;
   }
   .previewColumn {
-    order: -1;
+    order: 1;
   }
 }

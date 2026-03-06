@@ -46,11 +46,15 @@ export default function LoginPage() {
 
   return (
     <div className={styles.container} style={{ maxWidth: "400px", margin: "100px auto" }}>
-      <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-        <h1 style={{ color: "#5d4037", fontWeight: "bold" }}>CHOCOFUEL - Feed the Feeling</h1>
+      <div style={{ textAlign: "center", marginBottom: "1rem" }}>
+        <img 
+          src="/assets/CHOCOLATE LOGO 2_pages-to-jpg-0003.png" 
+          alt="CHOCOFUEL - Feed the Feeling" 
+          style={{ width: "85%", maxWidth: "400px", height: "auto" }}
+        />
       </div>
       <form className={styles.card} onSubmit={handleSubmit}>
-        <h2 className={styles.sectionTitle} style={{ textAlign: "center", marginBottom: "20px" }}>Welcome Back</h2>
+        <h2 className={`${styles.sectionTitle} heading-font`} style={{ textAlign: "center", marginBottom: "20px" }}>Welcome Back</h2>
         {error && <p style={{ color: "red", textAlign: "center", marginBottom: "10px" }}>{error}</p>}
         
         <div className={styles.fieldGroup}>
