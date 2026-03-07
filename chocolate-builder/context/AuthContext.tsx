@@ -4,17 +4,20 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 interface User {
-  id: string;
+  id?: string;
   name: string;
-  email: string;
+  email?: string;
+  phoneNumber?: string;
   role: string;
 }
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
+  guestUser: User | null;
   login: (token: string, user: User) => void;
   logout: () => void;
+  setGuestUser: (user: User) => void;
   isAuthenticated: boolean;
   isLoading: boolean;
 }
@@ -23,6 +26,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [guestUser, setGuestUserInternal] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
@@ -30,10 +34,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const savedToken = localStorage.getItem("token");
     const savedUser = localStorage.getItem("user");
+    const savedGuest = localStorage.getItem("guestUser");
 
     if (savedToken && savedUser) {
       setToken(savedToken);
       setUser(JSON.parse(savedUser));
+    }
+    if (savedGuest) {
+      setGuestUserInternal(JSON.parse(savedGuest));
     }
     setIsLoading(false);
   }, []);
@@ -51,18 +59,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const setGuestUser = (newUser: User) => {
+    setGuestUserInternal(newUser);
+    localStorage.setItem("guestUser", JSON.stringify(newUser));
+  };
+
   const logout = () => {
     setToken(null);
     setUser(null);
+    setGuestUserInternal(null);
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    router.push("/login");
+    localStorage.removeItem("guestUser");
+    router.push("/");
   };
 
-  const isAuthenticated = !!token;
+  const isAuthenticated = !!token || !!guestUser;
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, isAuthenticated, isLoading }}>
+    <AuthContext.Provider value={{ user, token, guestUser, login, logout, setGuestUser, isAuthenticated, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

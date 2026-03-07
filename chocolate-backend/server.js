@@ -105,6 +105,48 @@ app.post("/api/auth/login", async (req, res) => {
   }
 });
 
+// POST: Guest registration/login (creates/updates user based on email)
+app.post("/api/auth/guest", async (req, res) => {
+  try {
+    const { name, email, phoneNumber } = req.body;
+
+    if (!name || !email || !phoneNumber) {
+      return res.status(400).json({ message: "Name, email, and phone number are required" });
+    }
+
+    // Check if user exists by email
+    let user = await User.findOne({ email });
+    
+    if (user) {
+      // Update existing user's info if it's a guest returning
+      user.name = name;
+      user.phoneNumber = phoneNumber;
+      await user.save();
+    } else {
+      // Create new user (no password for guests)
+      user = new User({
+        name,
+        email,
+        phoneNumber,
+        role: "user"
+      });
+      await user.save();
+    }
+
+    const payload = {
+      user: {
+        id: user.id,
+      },
+    };
+
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "7d" });
+    res.status(200).json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
+  } catch (error) {
+    console.error("Guest auth error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 // POST: Create a new order (Protected)
 app.post("/api/orders", auth, async (req, res) => {
   try {
@@ -168,15 +210,15 @@ const isAdmin = async (req, res, next) => {
 app.get("/api/admin/data", auth, isAdmin, async (req, res) => {
   try {
     const users = await User.find({}, "-password").lean();
-    const orders = await Order.find().populate("user", "name email").sort({ createdAt: -1 }).lean();
+    const allOrders = await Order.find().populate("user", "name email").sort({ createdAt: -1 }).lean();
     
-    // Group orders by user for better display
+    // Group orders by user
     const usersWithOrders = users.map(user => ({
       ...user,
-      orders: orders.filter(order => order.user && order.user._id.toString() === user._id.toString())
+      orders: allOrders.filter(order => order.user && order.user._id.toString() === user._id.toString())
     }));
 
-    res.status(200).json({ users: usersWithOrders, allOrders: orders });
+    res.status(200).json({ users: usersWithOrders, allOrders });
   } catch (error) {
     console.error("Admin data error:", error);
     res.status(500).json({ message: "Internal server error" });

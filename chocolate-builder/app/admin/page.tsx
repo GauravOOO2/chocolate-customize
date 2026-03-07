@@ -108,6 +108,59 @@ export default function AdminPage() {
     }
   };
 
+  const renderOrderTable = (orders: Order[]) => (
+    <div style={{ overflowX: "auto" }}>
+      <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
+        <thead>
+          <tr style={{ borderBottom: "1px solid #ddd" }}>
+            <th style={{ padding: "10px" }}>Date</th>
+            <th style={{ padding: "10px" }}>Type</th>
+            <th style={{ padding: "10px" }}>Message</th>
+            <th style={{ padding: "10px" }}>Toppings</th>
+            <th style={{ padding: "10px" }}>Receiver</th>
+            <th style={{ padding: "10px" }}>Status</th>
+            <th style={{ padding: "10px" }}>Address</th>
+          </tr>
+        </thead>
+        <tbody>
+          {orders.map((o) => (
+            <tr key={o._id} style={{ borderBottom: "1px solid #f9f9f9", backgroundColor: o.isShipped ? "#f1f8e9" : "transparent" }}>
+              <td style={{ padding: "10px", fontSize: "0.9em" }}>{new Date(o.createdAt).toLocaleDateString()}</td>
+              <td style={{ padding: "10px", textTransform: "capitalize" }}>{o.chocolateType.replace(/_/g, " ")}</td>
+              <td style={{ padding: "10px", fontStyle: "italic" }}>"{o.message}"</td>
+              <td style={{ padding: "10px", fontSize: "0.85em" }}>
+                {o.toppings.length > 0 ? o.toppings.join(", ") : "None"}
+              </td>
+              <td style={{ padding: "10px" }}>{o.receiverName} ({o.receiverNumber})</td>
+              <td style={{ padding: "10px" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+                  <label style={{ fontSize: "0.85em", display: "flex", alignItems: "center", gap: "5px" }}>
+                    <input 
+                      type="checkbox" 
+                      checked={o.isReceived} 
+                      disabled={updatingOrders[o._id]}
+                      onChange={(e) => handleStatusUpdate(o._id, "isReceived", e.target.checked)}
+                    /> Received
+                  </label>
+                  <label style={{ fontSize: "0.85em", display: "flex", alignItems: "center", gap: "5px" }}>
+                    <input 
+                      type="checkbox" 
+                      checked={o.isShipped} 
+                      disabled={updatingOrders[o._id]}
+                      onChange={(e) => handleStatusUpdate(o._id, "isShipped", e.target.checked)}
+                    /> Shipped
+                  </label>
+                  {updatingOrders[o._id] && <span className="loader" style={{ width: "12px", height: "12px", border: "2px solid #795548", borderBottomColor: "transparent", margin: "5px 0 0 0" }}></span>}
+                </div>
+              </td>
+              <td style={{ padding: "10px", fontSize: "0.9em" }}>{o.shippingAddress}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+
   if (isLoading || loadingData) {
     return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>Loading Admin Dashboard...</div>;
   }
@@ -154,77 +207,25 @@ export default function AdminPage() {
         {error && <p style={{ color: "red", textAlign: "center" }}>{error}</p>}
         
         <section style={{ marginBottom: "3rem" }}>
-          <h2 style={{ color: "#5d4037", borderBottom: "2px solid #795548", paddingBottom: "10px" }}>User Management & Orders</h2>
+          <h2 style={{ color: "#5d4037", borderBottom: "2px solid #795548", paddingBottom: "10px" }}>Users Orders</h2>
           
           <div style={{ display: "grid", gap: "20px", marginTop: "20px" }}>
             {adminData?.users.map((u) => (
-              <div key={u._id} style={{ backgroundColor: "white", padding: "20px", borderRadius: "8px", boxShadow: "0 2px 10px rgba(0,0,0,0.1)" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", marginBottom: "15px", borderBottom: "1px solid #eee", paddingBottom: "10px" }}>
-                  <div>
-                    <h3 style={{ margin: 0, color: "#5d4037" }}>{u.name} {u.role === "admin" && <span style={{ fontSize: "0.7em", backgroundColor: "#795548", color: "white", padding: "2px 6px", borderRadius: "4px", verticalAlign: "middle" }}>ADMIN</span>}</h3>
-                    <p style={{ margin: "5px 0", color: "#666" }}>Email: {u.email} | Phone: {u.phoneNumber}</p>
+              u.orders.length > 0 && (
+                <div key={u._id} style={{ backgroundColor: "white", padding: "20px", borderRadius: "8px", boxShadow: "0 2px 10px rgba(0,0,0,0.1)" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", marginBottom: "15px", borderBottom: "1px solid #eee", paddingBottom: "10px" }}>
+                    <div>
+                      <h3 style={{ margin: 0, color: "#5d4037" }}>{u.name} {u.role === "admin" && <span style={{ fontSize: "0.7em", backgroundColor: "#795548", color: "white", padding: "2px 6px", borderRadius: "4px", verticalAlign: "middle" }}>ADMIN</span>}</h3>
+                      <p style={{ margin: "5px 0", color: "#666" }}>Email: {u.email} | Phone: {u.phoneNumber}</p>
+                    </div>
+                    <div style={{ textAlign: "right" }}>
+                      <p style={{ margin: 0, color: "#888", fontSize: "0.9em" }}>Joined: {new Date(u.createdAt).toLocaleDateString()}</p>
+                      <p style={{ margin: "5px 0", fontWeight: "bold", color: "#795548" }}>Total Orders: {u.orders.length}</p>
+                    </div>
                   </div>
-                  <div style={{ textAlign: "right" }}>
-                    <p style={{ margin: 0, color: "#888", fontSize: "0.9em" }}>Joined: {new Date(u.createdAt).toLocaleDateString()}</p>
-                    <p style={{ margin: "5px 0", fontWeight: "bold", color: "#795548" }}>Total Orders: {u.orders.length}</p>
-                  </div>
+                  {renderOrderTable(u.orders)}
                 </div>
-
-                {u.orders.length > 0 ? (
-                  <div style={{ overflowX: "auto" }}>
-                    <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
-                      <thead>
-                        <tr style={{ borderBottom: "1px solid #ddd" }}>
-                          <th style={{ padding: "10px" }}>Date</th>
-                          <th style={{ padding: "10px" }}>Type</th>
-                          <th style={{ padding: "10px" }}>Message</th>
-                          <th style={{ padding: "10px" }}>Toppings</th>
-                          <th style={{ padding: "10px" }}>Receiver</th>
-                          <th style={{ padding: "10px" }}>Status</th>
-                          <th style={{ padding: "10px" }}>Address</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {u.orders.map((o) => (
-                          <tr key={o._id} style={{ borderBottom: "1px solid #f9f9f9", backgroundColor: o.isShipped ? "#f1f8e9" : "transparent" }}>
-                            <td style={{ padding: "10px", fontSize: "0.9em" }}>{new Date(o.createdAt).toLocaleDateString()}</td>
-                            <td style={{ padding: "10px", textTransform: "capitalize" }}>{o.chocolateType.replace(/_/g, " ")}</td>
-                            <td style={{ padding: "10px", fontStyle: "italic" }}>"{o.message}"</td>
-                            <td style={{ padding: "10px", fontSize: "0.85em" }}>
-                              {o.toppings.length > 0 ? o.toppings.join(", ") : "None"}
-                            </td>
-                            <td style={{ padding: "10px" }}>{o.receiverName} ({o.receiverNumber})</td>
-                            <td style={{ padding: "10px" }}>
-                              <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
-                                <label style={{ fontSize: "0.85em", display: "flex", alignItems: "center", gap: "5px" }}>
-                                  <input 
-                                    type="checkbox" 
-                                    checked={o.isReceived} 
-                                    disabled={updatingOrders[o._id]}
-                                    onChange={(e) => handleStatusUpdate(o._id, "isReceived", e.target.checked)}
-                                  /> Received
-                                </label>
-                                <label style={{ fontSize: "0.85em", display: "flex", alignItems: "center", gap: "5px" }}>
-                                  <input 
-                                    type="checkbox" 
-                                    checked={o.isShipped} 
-                                    disabled={updatingOrders[o._id]}
-                                    onChange={(e) => handleStatusUpdate(o._id, "isShipped", e.target.checked)}
-                                  /> Shipped
-                                </label>
-                                {updatingOrders[o._id] && <span className="loader" style={{ width: "12px", height: "12px", border: "2px solid #795548", borderBottomColor: "transparent", margin: "5px 0 0 0" }}></span>}
-                              </div>
-                            </td>
-                            <td style={{ padding: "10px", fontSize: "0.9em" }}>{o.shippingAddress}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                ) : (
-                  <p style={{ color: "#999", fontStyle: "italic" }}>No orders placed yet.</p>
-                )}
-              </div>
+              )
             ))}
           </div>
         </section>

@@ -32,7 +32,7 @@ const TOPPING_OPTIONS = [
 const MAX_MESSAGE_LENGTH = 26;
 
 export default function BuilderLayout() {
-  const { user, token, logout, isAuthenticated, isLoading } = useAuth();
+  const { user, guestUser, token, logout, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [state, setState] = useState<ChocolateState>({
@@ -43,12 +43,6 @@ export default function BuilderLayout() {
     receiverName: "",
     receiverNumber: "",
   });
-
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.push("/login");
-    }
-  }, [isAuthenticated, isLoading, router]);
 
   const handleTypeChange = (type: ChocolateType) => {
     setState((prev) => ({ ...prev, chocolateType: type }));
@@ -88,8 +82,7 @@ export default function BuilderLayout() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isAuthenticated) {
-      alert("Please login to place an order");
-      router.push("/login");
+      alert("Please provide your details to place an order");
       return;
     }
 
@@ -100,19 +93,28 @@ export default function BuilderLayout() {
         if (!apiUrl) {
           throw new Error("API URL is not configured");
         }
+        
+        const orderData: any = {
+          ...state,
+          message: state.message.trim(),
+          shippingAddress: state.shippingAddress.trim(),
+          receiverName: state.receiverName.trim(),
+          receiverNumber: state.receiverNumber.trim(),
+        };
+
+        if (guestUser) {
+          orderData.guestName = guestUser.name;
+          orderData.guestPhone = guestUser.phoneNumber;
+          orderData.guestEmail = guestUser.email;
+        }
+
         const response = await fetch(`${apiUrl}/orders`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             "x-auth-token": token || "",
           },
-          body: JSON.stringify({
-            ...state,
-            message: state.message.trim(),
-            shippingAddress: state.shippingAddress.trim(),
-            receiverName: state.receiverName.trim(),
-            receiverNumber: state.receiverNumber.trim(),
-          }),
+          body: JSON.stringify(orderData),
         });
 
         if (response.ok) {
@@ -130,7 +132,7 @@ export default function BuilderLayout() {
           });
         } else {
           const errorData = await response.json();
-          if (response.status === 401) {
+          if (response.status === 401 && token) {
             alert("Session expired. Please login again.");
             logout();
           } else {
@@ -146,9 +148,11 @@ export default function BuilderLayout() {
     }
   };
 
-  if (isLoading || !isAuthenticated) {
+  if (isLoading) {
     return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>Loading...</div>;
   }
+
+  const displayName = user?.name || guestUser?.name || "Guest";
 
   return (
     <main className={styles.page}>
@@ -170,7 +174,7 @@ export default function BuilderLayout() {
         marginTop: "1rem"
       }}>
         <div>
-          <h2 style={{ margin: 0, color: "#5d4037" }}>Hello, {user?.name}</h2>
+          <h2 style={{ margin: 0, color: "#5d4037" }}>Hello, {displayName}</h2>
         </div>
         <button 
           onClick={logout}
